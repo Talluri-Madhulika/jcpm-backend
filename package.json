@@ -1,10 +1,11 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "JCPM ELURU Backend",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +20,7 @@
     "mongoose": "^9.9.5",
     "node-cron": "^4.6.0",
     "nodemailer": "^10.0.10",
-    "web-push": "^3.6.7"
+    "web-push": "^3.6.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
