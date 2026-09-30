@@ -19,9 +19,13 @@ const authRoutes = require('./routes/authRoutes');
 const socialChannelRoutes = require('./routes/socialChannelRoutes');
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+app.use(cors({
+  origin: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
+app.use(express.json());
 app.use('/api/songs', songRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/short-messages', shortMessageRoutes);
