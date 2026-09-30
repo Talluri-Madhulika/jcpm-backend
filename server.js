@@ -17,15 +17,25 @@ const dailyPromiseRoutes = require('./routes/dailyPromiseRoutes');
 const pushRoutes = require('./routes/pushRoutes');
 const authRoutes = require('./routes/authRoutes');
 const socialChannelRoutes = require('./routes/socialChannelRoutes');
+
 const app = express();
 
+/* =========================
+   CORS
+========================= */
+
 app.use(cors({
-  origin: true,
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
+
+/* =========================
+   API ROUTES
+========================= */
+
 app.use('/api/songs', songRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/short-messages', shortMessageRoutes);
@@ -36,29 +46,46 @@ app.use('/api/daily-promises', dailyPromiseRoutes);
 app.use('/api/push', pushRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/social-channels', socialChannelRoutes);
+
+/* =========================
+   TEST ROUTE
+========================= */
+
 app.get('/', (req, res) => {
   res.send('JCPM ELURU Backend is Running Successfully!');
 });
 
+/* =========================
+   PORT
+========================= */
+
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`JCPM ELURU Backend running on port ${PORT}`);
-});
+/* =========================
+   MONGODB ATLAS HOSTS
+========================= */
 
-// Atlas hosts discovered from your SRV record
 const atlasHosts = [
   'ac-eho34sc-shard-00-00.63hafuw.mongodb.net',
   'ac-eho34sc-shard-00-01.63hafuw.mongodb.net',
   'ac-eho34sc-shard-00-02.63hafuw.mongodb.net'
 ];
 
+/* =========================
+   START SERVER
+========================= */
+
 async function startServer() {
   try {
-    // Convert mongodb+srv:// to direct seed-list connection
     const originalUri = process.env.MONGO_URI;
 
-    const match = originalUri.match(/^mongodb\+srv:\/\/([^@]+)@[^/]+(\/.*)?$/);
+    if (!originalUri) {
+      throw new Error('MONGO_URI is not defined');
+    }
+
+    const match = originalUri.match(
+      /^mongodb\+srv:\/\/([^@]+)@[^/]+(\/.*)?$/
+    );
 
     if (!match) {
       throw new Error('Invalid MONGO_URI format');
@@ -79,8 +106,13 @@ async function startServer() {
 
     console.log('MongoDB Connected Successfully!');
 
+    /*
+      Start the server ONLY after MongoDB connects.
+      This prevents app.listen() from being called twice.
+    */
+
     app.listen(PORT, '0.0.0.0', () => {
-      console.log(`Server running on port ${PORT}`);
+      console.log(`JCPM ELURU Backend running on port ${PORT}`);
     });
 
     require('./notificationScheduler');
